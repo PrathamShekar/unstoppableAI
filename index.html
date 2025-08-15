@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Poxa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="style.css">
+    <link>
+</head>
+<style>  body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #000000;
+            color: #CCCCCC;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('eu.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.3;
+            z-index: -1;
+            filter: grayscale(100%);
+        }
+
+        header {
+            background-color: rgba(17, 17, 17, 0.9);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #444444;
+            box-shadow: 0 2px 10px rgba(68, 68, 68, 0.3);
+            z-index: 10;
+            position: relative;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5em;
+            color: #CCCCCC;
+            text-shadow: 0 0 20px #666666;
+            
+            margin: 0;
+        }
+
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.9);
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            max-width: 80%;
+            animation: slideIn 0.5s ease-out;
+            box-shadow: 0 1px 5px rgba(68, 68, 68, 0.2);
+            position: relative;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .user-message {
+            background-color: #333333;
+            align-self: flex-end;
+            margin-left: auto;
+            border: 1px solid #444444;
+        }
+
+        .ai-message {
+            background-color: #222222;
+            align-self: flex-start;
+            margin-right: auto;
+            border: 1px solid #555555;
+        }
+
+        .ai-message::before {
+            content: '';
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-image: url('eu2.png');
+            background-size: cover;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+            filter: grayscale(100%);
+        }
+
+        /* Efeito de digitação para mensagens da AI */
+        .ai-message.typing::after {
+            content: '...';
+            animation: typing 1s infinite;
+        }
+
+        @keyframes typing {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+
+        #input-container {
+            display: flex;
+            padding: 10px;
+            background-color: rgba(17, 17, 17, 0.9);
+            border-top: 1px solid #444444;
+            box-shadow: 0 -2px 10px rgba(68, 68, 68, 0.3);
+            z-index: 10;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 10px;
+            background-color: #222222;
+            border: 1px solid #444444;
+            color: #CCCCCC;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        #user-input:focus {
+            border-color: #555555;
+            box-shadow: 0 0 5px rgba(85, 85, 85, 0.3);
+        }
+
+        #send-btn {
+            padding: 10px 20px;
+            background-color: #333333;
+            color: #CCCCCC;
+            border: none;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 15px;
+             text-shadow: 0 0 30px #666666;
+        }
+
+        #send-btn:hover {
+            background-color: #444444;
+        }
+</style>
+<body>
+    <header>
+        <h1 class="logo">Unstoppable AI</h1>
+    </header>
+    <div id="chat-container"></div>
+    <div id="input-container">
+        <input type="text" id="user-input" placeholder="Digite sua mensagem...">
+        <button id="send-btn">Enviar</button>
+    </div>
+</body>
+    <script>
+          const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        // Respostas dummy da IA (substitua pela API depois)
+        const aiResponses = [
+            "Olá! Sou a Unstoppable AI, desenvolvido pelo Eng. Pratham, seu terapeuta futurista. Como posso ajudar hoje?",
+            "Entendo como isso pode ser difícil. Vamos explorar seus sentimentos?",
+            "Respire fundo. O que está te incomodando especificamente?",
+            "Você é mais forte do que pensa. Conte-me mais sobre isso.",
+            "No futuro, tudo se resolve. Qual é o próximo passo que você vê?"
+        ];
+
+        function addMessage(text, isUser) {
+            const message = document.createElement('div');
+            message.classList.add('message');
+            if (isUser) {
+                message.classList.add('user-message');
+            } else {
+                message.classList.add('ai-message');
+            }
+            message.textContent = text;
+            chatContainer.appendChild(message);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function simulateTyping(response) {
+            const typingMessage = document.createElement('div');
+            typingMessage.classList.add('message', 'ai-message', 'typing');
+            typingMessage.textContent = '';
+            chatContainer.appendChild(typingMessage);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            setTimeout(() => {
+                chatContainer.removeChild(typingMessage);
+                addMessage(response, false);
+            }, 1500); // Simula tempo de digitação
+        }
+
+        sendBtn.addEventListener('click', () => {
+            const text = userInput.value.trim();
+            if (text) {
+                addMessage(text, true);
+                userInput.value = '';
+
+                // Simula resposta da IA com efeito de digitação
+                setTimeout(() => {
+                    const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+                    simulateTyping(randomResponse);
+                }, 800);
+            }
+        });
+
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendBtn.click();
+            }
+        });
+
+        // Mensagem inicial da IA com simulação de digitação
+        setTimeout(() => {
+            simulateTyping("Seja bem vindo à Unstoppable AI, estou aqui para ouvir e ajudar como um terapeuta.");
+        }, 1000);
+    </script>
+</html>
